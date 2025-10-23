@@ -3,9 +3,8 @@ from prompts.basic_prompt import CHINESE_TUTOR_PROMPT
 from langchain.schema import HumanMessage, SystemMessage
 from langchain_community.chat_message_histories import SQLChatMessageHistory
 from pathlib import Path
-import time
 
-session_id = f"hancode_{int(time.time())}"
+session_id = "persistent_session"
 
 db_path = Path(__file__).parent.parent / "data" / "conversations.db"
 print(f"[DEBUG] DB path: {db_path}")
@@ -18,6 +17,13 @@ def main():
 
     print("=== HanCode: AI Chinese tutor")
     print("Type 'quit' or 'exit' to exit.\n")
+
+    if len(memory.messages):
+        print("=== Loaded previous conversation ===")
+        for msg in memory.messages[-6:]:
+            role = "You" if msg.type == "Human" else "Tutor"
+            print(f"{role}: {msg.content}")
+        print("=================================")
 
     start_msg = [
         SystemMessage(content=CHINESE_TUTOR_PROMPT),
