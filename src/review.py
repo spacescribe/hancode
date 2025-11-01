@@ -68,6 +68,7 @@ def quiz_mode():
             print(f"❌ Incorrect. It means: {english}")
     
     print(f"Your score: {score}/{len(questions)}")
+    print("==== Quiz mode finished ===")
 
 def main():
     print("=== HanCode: Review mode ===")

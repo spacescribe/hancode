@@ -6,6 +6,7 @@ from pathlib import Path
 from utils.vocab_extractor import extract_vocab
 from db.vocab_db import init_db, save_vocab
 import logging
+from review import show_recent, quiz_mode
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,18 @@ def main():
         if user_input.lower() in ["quit", "exit"]:
             print("Tutor: 再见\nZàijiàn\nGoodbye")
             break
+
+        if user_input.lower().startswith("/review"):
+            parts = user_input.lower().split()
+            if len(parts) == 1 or parts[1] == "week":
+                show_recent(7)
+            elif parts[1] == "today":
+                show_recent(1)
+            elif parts[1] == "quiz":
+                quiz_mode()
+            else:
+                print("Usage: /review [today|week|quiz]")
+            continue
 
         memory.add_user_message(user_input)
 
