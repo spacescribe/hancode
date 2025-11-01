@@ -21,6 +21,15 @@ def init_db():
                 )
         """)
 
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS quiz_stats(
+                word TEXT PRIMARY KEY,  
+                attempts INTEGER DEFAULT 0,
+                correct INTEGER DEFAULT 0,
+                last_tested TEXT
+            )
+        """)
+
     return conn
 
 def save_vocab(items):

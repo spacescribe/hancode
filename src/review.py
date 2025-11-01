@@ -2,6 +2,20 @@ import sqlite3
 from datetime import datetime, timedelta
 from db.vocab_db import db_path
 
+def update_quiz_stats(word, correct):
+    """Update performance tracking for each word."""
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO quiz_stats(word, attempts, correct, last_tested)
+            VALUES(?, 1, ?, ?)
+            ON CONFLICT(word) DO UPDATE SET
+                attempts=attempts+1,
+                correct = correct + ?,
+                last_tested = excluded.last_tested
+        """, (word, int(correct), datetime.now().isoformat(), int(correct)))
+        conn.commit()
+
 def get_recent_words(days=7):
     """Fetch words learned in `days` days"""
     since = (datetime.now()-timedelta(days=days)).isoformat()
@@ -45,7 +59,9 @@ def quiz_mode():
     
     for word, pinyin, english in questions:
         answer = input(f"{word} ({pinyin}): ").strip()
-        if answer == english.lower():
+        correct = (answer == english.lower())
+        update_quiz_stats(word, correct)
+        if correct:
             print("✅ Correct!")
             score+=1
         else:
